@@ -1,50 +1,47 @@
-# React + TypeScript + Vite
+# Neural Network Configurer for a Car Game
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## Overview
+This repository provides a simple neural network editor and visualizer for configuring an agent’s behavior in a car simulation environment. You can manually adjust network weights and biases, and instantly see how these changes affect the car’s actions on the road.
 
-Currently, two official plugins are available:
+The initial network configuration was trained via imitation learning: the agent’s observations (forward, right, and left rays) along with recorded actions (turn left, turn right) were collected and used to train a PyTorch model. This project allows you to load that trained network—or any other network of your choosing—and experiment with its parameters interactively.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+![2025-01-01 14-55-39](https://github.com/user-attachments/assets/76f8aae1-671e-4ad5-9fd0-b79a7d625642)
 
-## Expanding the ESLint configuration
+## Motivation
+The main goal is to help developers and researchers build an intuitive understanding of how neural networks make predictions. While demonstrated here with a car simulation, the underlying framework is flexible and can be adapted to various other scenarios where real-time interaction with a neural network is desired.
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
+## Design Components
 
-- Configure the top-level `parserOptions` property like this:
+![image](https://github.com/user-attachments/assets/8b311d11-9a02-403d-a80c-f3d56fed4331)
 
-```js
-export default tseslint.config({
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
-```
+### 1. SceneViewport
+**Responsibilities**:
+- Rendering the car environment
+- Simulating physics
+- Detecting collisions
+- Casting rays for state observation
 
-- Replace `tseslint.configs.recommended` to `tseslint.configs.recommendedTypeChecked` or `tseslint.configs.strictTypeChecked`
-- Optionally add `...tseslint.configs.stylisticTypeChecked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and update the config:
+**Notes**:
+- Exports sensor data (rays, collision states, etc.) as inputs to the neural network.
+- Acts as the main “game loop,” continuously updating the environment and retrieving outputs from the network (or keyboard) to steer the car.
 
-```js
-// eslint.config.js
-import react from 'eslint-plugin-react'
+### 2. NeuralNetworkConfigurer
+**Responsibilities**:
+- Presents an interactive, node-based view of the neural network.
+- Displays the forward pass in real time (showing node activations).
+- Lets you manually edit weights and biases to see how changes in the network’s parameters affect the car’s behavior.
 
-export default tseslint.config({
-  // Set the react version
-  settings: { react: { version: '18.3' } },
-  plugins: {
-    // Add the react plugin
-    react,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended rules
-    ...react.configs.recommended.rules,
-    ...react.configs['jsx-runtime'].rules,
-  },
-})
-```
+### 3. InputController
+**Responsibilities**:
+- Determines which player actions (forward, backward, left, right) are active at any given time.
+- Operates in two modes:
+  1. **Keyboard**: Actions depend on which keys are pressed.
+  2. **Neural Network**: Actions are predicted by the neural network based on sensor data.  
+     *(Note: In this car simulation, “forward” is always active, and “backward” is never active. The network only determines left/right turning.)*
+
+# License
+This project is licensed under the MIT License.
+
+# Acknowledgments
+- PyTorch for the training framework.
+- React Flow for the interactive nodes in neural network configurer.
