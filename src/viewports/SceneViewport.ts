@@ -254,6 +254,7 @@ export class SceneViewport extends BaseViewport {
         y: this.initialCarY,
     };
     private cameraLerpFactor = 0.1;
+    private cameraZoom: number = 0.7;
 
     constructor(canvas: HTMLCanvasElement) {
         super(canvas);
@@ -301,8 +302,10 @@ export class SceneViewport extends BaseViewport {
 
         this.ctx.save();
 
-        const offsetX = this.canvas.width / 2 - this.camera.x;
-        const offsetY = this.canvas.height / 2 - this.camera.y;
+        this.ctx.scale(this.cameraZoom, this.cameraZoom);
+
+        const offsetX = (this.canvas.width / this.cameraZoom) / 2 - this.camera.x;
+        const offsetY = (this.canvas.height / this.cameraZoom) / 2 - this.camera.y;
 
         this.ctx.translate(offsetX, offsetY);
 
